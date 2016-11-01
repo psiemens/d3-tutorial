@@ -2,7 +2,7 @@
 
 ```bash
 # Run simple HTTP server
-python -m SimpleHttpServer
+python -m SimpleHTTPServer
 ```
 
 Tutorial - [http://localhost:8000/tutorial.html](http://localhost:8000/tutorial.html)
