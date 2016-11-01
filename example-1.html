@@ -1,29 +1,38 @@
 <!DOCTYPE html>
-<meta charset='utf-8'>
-<style>
+<html>
+<head>
+  <meta charset='utf-8'>
+  <style>
 
-.axis--x path {
-  display: none;
-}
+  .axis--x path {
+    display: none;
+  }
 
-.line {
-  fill: none;
-  stroke: steelblue;
-  stroke-width: 1.5px;
-}
+  .line {
+    fill: none;
+    stroke: steelblue;
+    stroke-width: 1.5px;
+  }
 
-</style>
-<svg width='960' height='500'></svg>
+  </style>
+</head>
+<body>
 <script src='https://d3js.org/d3.v4.min.js'></script>
 <script>
 
-var dataURL = 'http://static.ubyssey.ca/media/data/walmart/stores/1.csv';
+var STORE_ID = 1;
+var DATA_URL = 'http://static.ubyssey.ca/media/data/walmart/stores/' + STORE_ID + '.csv';
 
-var svg = d3.select('svg'),
+var SVG_WIDTH = 960;
+var SVG_HEIGHT = 400;
+
+var svg = d3.select('body').append('svg'),
     margin = {top: 20, right: 20, bottom: 30, left: 75},
-    width = +svg.attr('width') - margin.left - margin.right,
-    height = +svg.attr('height') - margin.top - margin.bottom,
+    width = SVG_WIDTH - margin.left - margin.right,
+    height = SVG_HEIGHT - margin.top - margin.bottom,
     g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+svg.attr('height', SVG_HEIGHT + 'px').attr('width', SVG_WIDTH + 'px');
 
 var parseTime = d3.timeParse('%Y-%m-%d');
 
@@ -43,7 +52,7 @@ var parseData = function(d) {
   return d;
 };
 
-d3.csv(dataURL, parseData, function(error, data) {
+d3.csv(DATA_URL, parseData, function(error, data) {
   if (error) throw error;
 
   data = data.sort(function(a, b) { return d3.ascending(a.week, b.week); });
@@ -74,3 +83,5 @@ d3.csv(dataURL, parseData, function(error, data) {
 });
 
 </script>
+</body>
+</html>
