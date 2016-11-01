@@ -1,0 +1,87 @@
+<!DOCTYPE html>
+<meta charset='utf-8'>
+<style>
+
+.axis--x path {
+  display: none;
+}
+
+.line {
+  fill: none;
+  stroke-width: 1.5px;
+}
+
+</style>
+<script src='https://d3js.org/d3.v4.min.js'></script>
+<script>
+
+var STORE_ID = 1;
+var DATA_URL = 'http://static.ubyssey.ca/media/data/walmart/stores/' + STORE_ID + '.csv';
+
+var SVG_WIDTH = 960;
+var SVG_HEIGHT = 400;
+
+var parseTime = d3.timeParse('%Y-%m-%d');
+
+var parseData = function(d) {
+  d.week = parseTime(d.week);
+  d.sales = +d.sales;
+  d.fuel_price = +d.fuel_price;
+  return d;
+};
+
+function buildChart(data, field, label, color) {
+  var svg = d3.select('body').append('svg'),
+      margin = {top: 20, right: 20, bottom: 30, left: 75},
+      width = SVG_WIDTH - margin.left - margin.right,
+      height = SVG_HEIGHT - margin.top - margin.bottom,
+      g = svg.append('g').attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+  svg.attr('height', SVG_HEIGHT + 'px').attr('width', SVG_WIDTH + 'px');
+
+  var x = d3.scaleTime()
+      .rangeRound([0, width]);
+
+  var y = d3.scaleLinear()
+      .rangeRound([height, 0]);
+
+  var line = d3.line()
+      .x(function(d) { return x(d.week); })
+      .y(function(d) { return y(d[field]); });
+
+  data = data.sort(function(a, b) { return d3.ascending(a.week, b.week); });
+
+  x.domain(d3.extent(data, function(d) { return d.week; }));
+  y.domain(d3.extent(data, function(d) { return d[field]; }));
+
+  g.append('g')
+      .attr('class', 'axis axis--x')
+      .attr('transform', 'translate(0,' + height + ')')
+      .call(d3.axisBottom(x));
+
+  g.append('g')
+      .attr('class', 'axis axis--y')
+      .call(d3.axisLeft(y))
+    .append('text')
+      .attr('fill', '#000')
+      .attr('transform', 'rotate(-90)')
+      .attr('y', 6)
+      .attr('dy', '0.71em')
+      .style('text-anchor', 'end')
+      .text(label + ' ($)');
+
+  g.append('path')
+      .datum(data)
+      .attr('class', 'line')
+      .attr('stroke', color)
+      .attr('d', line);
+}
+
+d3.csv(DATA_URL, parseData, function(error, data) {
+  if (error) throw error;
+
+  buildChart(data, 'sales', 'Sales', 'steelblue');
+  buildChart(data, 'fuel_price', 'Fuel Price', 'red');
+});
+
+</script>
